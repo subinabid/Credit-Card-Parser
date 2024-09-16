@@ -4,6 +4,7 @@ import os
 import argparse
 import sqlite3
 from bank_hdfc import parse_hdfc
+from bank_yesbank import parse_yesbank
 import csv
 
 
@@ -62,6 +63,7 @@ def get_vendors() -> dict[str, dict]:
                 "short_name": row[1],
                 "category": row[2],
             }
+        print("Vendors fetched successfully.")
         return vendors
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -123,6 +125,8 @@ def main(file, bank):
 
     if bank.lower() == Bank.HDFC:
         transactions = parse_hdfc(file)
+    elif bank.lower() == Bank.YESBANK:
+        transactions = parse_yesbank(file)
 
     for transaction in transactions:
         if transaction["vendor"] in vendors.keys():
