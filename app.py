@@ -117,8 +117,10 @@ def delete_vendor(bank_name: str) -> dict:
         row = cursor.fetchone()
         if not row:
             return {
-                "message": "Vendor does not exist in the database.",
-                "type": "info",
+                "error": {
+                    "message": "Vendor does not exist in the database.",
+                    "type": "info",
+                }
             }
         # Delete the vendor from the database
         cursor.execute("DELETE FROM vendors WHERE bank_name=?", (bank_name,))
