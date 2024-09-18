@@ -160,7 +160,7 @@ def main(file, bank):
     # Check if the file exists
     if not os.path.exists(file):
         print("File not found. Please check the file path and try again.")
-        return
+        return {"error": "File not found. Please check the file path and try again."}
 
     print("Parsing the credit card bill...")
     print(f"Bank: {bank}")
@@ -169,7 +169,7 @@ def main(file, bank):
 
     if "error" in vendors:
         print(vendors["error"]["message"])
-        return
+        return {"error": vendors["error"]["message"]}
 
     # Get the appropriate parsing function based on the bank
     parse_function = PARSE_FUNCTIONS.get(bank.lower())
@@ -177,7 +177,7 @@ def main(file, bank):
     if not parse_function:
         print("Bank not supported.")
         print(f"Supported banks: {banklist}")
-        return
+        return {"error": "Bank not supported."}
 
     try:
         transactions = parse_function(file)
@@ -185,9 +185,10 @@ def main(file, bank):
         print("Transactions parsed successfully.")
     except Exception as e:
         print(f"An error occurred while parsing the file: {e}")
-        return
+        return {"error": f"An error occurred while parsing the file: {e}"}
 
     export_csv(transactions)
+    return {"message": "Transactions parsed successfully."}
 
 
 if __name__ == "__main__":
