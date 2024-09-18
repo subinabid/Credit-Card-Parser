@@ -4,24 +4,22 @@ import os
 import argparse
 import sqlite3
 from bank_hdfc import parse_hdfc
-from bank_yesbank import parse_yesbank
+from bank_yesbank import parse_yes
+from bank_axis import parse_axis
+
 import csv
 
 
-class Bank:
-    """Class to define the supported banks."""
+PARSE_FUNCTIONS = {
+    "hdfc": parse_hdfc,
+    "yes": parse_yes,
+    "axis": parse_axis,
+}
 
-    HDFC = "hdfc"
-    ICICI = "icici"
-    SBI = "sbi"
-    YESBANK = "yesbank"
-    CITI = "citi"
-
-
-banklist = [Bank.HDFC, Bank.ICICI, Bank.SBI, Bank.YESBANK, Bank.CITI]
+banklist = [keys for keys in PARSE_FUNCTIONS.keys()]
 
 
-def export_csv(transactions):
+def export_csv(transactions: list[dict]):
     """Export the transactions to a CSV file."""
     csv_filename = "transactions.csv"
     fieldnames = [
@@ -63,7 +61,7 @@ def get_vendors() -> dict[str, dict]:
                 "short_name": row[1],
                 "category": row[2],
             }
-        print("Vendors fetched successfully.")
+        print(f"{len(vendors)} Vendors fetched successfully.")
         return vendors
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -75,7 +73,9 @@ def get_vendors() -> dict[str, dict]:
         }
 
 
-def add_vendor(bank_name, short_name, category, name_source):
+def add_vendor(
+    bank_name: str, short_name: str, category: str, name_source: str
+) -> dict:
     """Add a new vendor to the database."""
     try:
         conn = sqlite3.connect("database.db")
@@ -93,6 +93,7 @@ def add_vendor(bank_name, short_name, category, name_source):
             (bank_name, short_name, category, name_source),
         )
         conn.commit()
+        conn.close()
         return {
             "message": f"Vendor {bank_name} added successfully.",
             "type": "success",
@@ -107,27 +108,40 @@ def add_vendor(bank_name, short_name, category, name_source):
         }
 
 
-def main(file, bank):
-    """Parse the credit card bill and print the transactions."""
+def delete_vendor(bank_name: str) -> dict:
+    """Delete a vendor from the database."""
+    try:
+        conn = sqlite3.connect("database.db")
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM vendors WHERE bank_name=?", (bank_name,))
+        row = cursor.fetchone()
+        if not row:
+            return {
+                "message": "Vendor does not exist in the database.",
+                "type": "info",
+            }
+        # Delete the vendor from the database
+        cursor.execute("DELETE FROM vendors WHERE bank_name=?", (bank_name,))
+        conn.commit()
+        conn.close()
+        return {
+            "message": f"Vendor {bank_name} deleted successfully.",
+            "type": "success",
+        }
+    except sqlite3.Error as e:
+        print(f"An error occurred: {e}")
+        return {
+            "error": {
+                "message": "An error occurred while deleting the vendor from the database.",
+                "type": "database_error",
+            }
+        }
 
-    # Check if the file exists
-    if not os.path.exists(file):
-        print("File not found. Please check the file path and try again.")
-        return
 
-    # Check if the bank is supported
-    if bank.lower() not in banklist:
-        print("Bank not supported.")
-        print(f"Supported banks: {banklist}")
-        return
-
-    vendors = get_vendors()
-
-    if bank.lower() == Bank.HDFC:
-        transactions = parse_hdfc(file)
-    elif bank.lower() == Bank.YESBANK:
-        transactions = parse_yesbank(file)
-
+def categorize_transaction(
+    transactions: list[dict], vendors: dict, bank: str
+) -> list[dict]:
+    """Categorize the transaction based on the vendor."""
     for transaction in transactions:
         if transaction["vendor"] in vendors.keys():
             transaction["category"] = vendors[transaction["vendor"]]["category"]
@@ -137,6 +151,41 @@ def main(file, bank):
             add_vendor(
                 transaction["vendor"], transaction["vendor"], "Misc", bank.lower()
             )
+    return transactions
+
+
+def main(file, bank):
+    """Parse the credit card bill and print the transactions."""
+
+    # Check if the file exists
+    if not os.path.exists(file):
+        print("File not found. Please check the file path and try again.")
+        return
+
+    print("Parsing the credit card bill...")
+    print(f"Bank: {bank}")
+    print(f"File {file} found.")
+    vendors = get_vendors()
+
+    if "error" in vendors:
+        print(vendors["error"]["message"])
+        return
+
+    # Get the appropriate parsing function based on the bank
+    parse_function = PARSE_FUNCTIONS.get(bank.lower())
+
+    if not parse_function:
+        print("Bank not supported.")
+        print(f"Supported banks: {banklist}")
+        return
+
+    try:
+        transactions = parse_function(file)
+        transactions = categorize_transaction(transactions, vendors, bank)
+        print("Transactions parsed successfully.")
+    except Exception as e:
+        print(f"An error occurred while parsing the file: {e}")
+        return
 
     export_csv(transactions)
 

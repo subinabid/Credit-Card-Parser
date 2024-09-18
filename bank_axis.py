@@ -3,7 +3,7 @@
 from datetime import datetime
 
 
-def parse_yes(file):
+def parse_axis(file):
     """Parse the credit card bill and return the transactions."""
     transactions = []
     with open(file) as f:
@@ -25,8 +25,7 @@ def parse_yes(file):
             line = line[0:-3]
             spaces = [i for i, char in enumerate(line) if char == " "]
             last_space = spaces[-1]
-            vendor_space = spaces[-2]
-            vendor = line[:vendor_space]
+            vendor = line[:last_space]
             vendor = vendor[: vendor.find(" - Ref No:")]
             amount = line[last_space:]
             amount = amount.replace(",", "")
