@@ -17,9 +17,10 @@ def test_vendor_addition_deletion():
 @pytest.mark.parametrize(
     "file, bank",
     [
-        ("test_transactions_axis.txt", "axis"),
-        ("test_transactions_hdfc.txt", "hdfc"),
-        ("test_transactions_yes.txt", "yes"),
+        ("test/test_transactions_axis.txt", "axis"),
+        ("test/test_transactions_hdfc.txt", "hdfc"),
+        ("test/test_transactions_yes.txt", "yes"),
+        ("test/test_transactions_icici.txt", "icici"),
     ],
 )
 def test_main(file, bank):

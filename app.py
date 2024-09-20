@@ -6,6 +6,7 @@ import sqlite3
 from bank_hdfc import parse_hdfc
 from bank_yesbank import parse_yes
 from bank_axis import parse_axis
+from bank_icici import parse_icici
 
 import csv
 
@@ -14,6 +15,7 @@ PARSE_FUNCTIONS = {
     "hdfc": parse_hdfc,
     "yes": parse_yes,
     "axis": parse_axis,
+    "icici": parse_icici,
 }
 
 banklist = [keys for keys in PARSE_FUNCTIONS.keys()]
@@ -177,7 +179,7 @@ def main(file, bank):
     parse_function = PARSE_FUNCTIONS.get(bank.lower())
 
     if not parse_function:
-        print("Bank not supported.")
+        print("Error: Bank not supported.")
         print(f"Supported banks: {banklist}")
         return {"error": "Bank not supported."}
 
