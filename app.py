@@ -3,10 +3,8 @@
 import os
 import argparse
 import sqlite3
-from bank_hdfc import parse_hdfc
-from bank_yesbank import parse_yes
-from bank_axis import parse_axis
-from bank_icici import parse_icici
+from parsers import parse_axis, parse_hdfc, parse_icici, parse_yes
+
 
 import csv
 
