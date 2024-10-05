@@ -1,0 +1,16 @@
+[project]
+name = "Credit-Card-Parser"
+version = "0.1.0"
+description = "Parses the text from a credit card bill to extract the date, category, amount and vendor for each transaction and exports a csv summary"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pre-commit>=3.8.0",
+    "pytest>=8.3.3",
+]
+
+[tool.ruff]
+line-length = 120
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
