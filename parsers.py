@@ -132,6 +132,45 @@ def parse_icici(file):
     return transactions
 
 
+def parse_sbi(file):
+    """Parse SBI credit card bill and return the transactions."""
+    transactions = []
+    with open(file) as f:
+        lines = f.readlines()
+        for line in lines:
+            line = line.strip()
+            if line == "":
+                continue
+
+            tx_date = line[0:9]
+            tx_date = datetime.strptime(tx_date, "%d %b %y")
+            line = line[10:]
+
+            credit = False
+
+            if line[-1:] == "C":
+                credit = True
+
+            line = line[0:-2]
+            spaces = [i for i, char in enumerate(line) if char == " "]
+            last_space = spaces[-1]
+            amount = line[last_space:]
+            amount = amount.replace(",", "")
+            amount = float(amount)
+            amount = amount * -1 if credit else amount
+            vendor = line[:last_space]
+
+            transaction = {}
+            transaction["date"] = tx_date
+            transaction["vendor"] = vendor
+            transaction["amount"] = amount
+            transaction["credit"] = credit
+            transaction["source"] = "SBI"
+
+            transactions.append(transaction)
+    return transactions
+
+
 def parse_yes(file):
     """Parse Yesbank credit card bill and return the transactions."""
     transactions = []

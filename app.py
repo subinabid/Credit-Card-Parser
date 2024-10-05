@@ -1,19 +1,18 @@
 """A parser to analyse credit card transactions from the bill."""
 
-import os
 import argparse
-import sqlite3
-from parsers import parse_axis, parse_hdfc, parse_icici, parse_yes
-
-
 import csv
+import os
+import sqlite3
 
+from parsers import parse_axis, parse_hdfc, parse_icici, parse_sbi, parse_yes
 
 PARSE_FUNCTIONS = {
-    "hdfc": parse_hdfc,
-    "yes": parse_yes,
     "axis": parse_axis,
+    "hdfc": parse_hdfc,
     "icici": parse_icici,
+    "sbi": parse_sbi,
+    "yes": parse_yes,
 }
 
 banklist = [keys for keys in PARSE_FUNCTIONS.keys()]
