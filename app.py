@@ -5,14 +5,14 @@ import csv
 import os
 import sqlite3
 
-from parsers import parse_axis, parse_hdfc, parse_icici, parse_sbi, parse_yes
+import parsers
 
 PARSE_FUNCTIONS = {
-    "axis": parse_axis,
-    "hdfc": parse_hdfc,
-    "icici": parse_icici,
-    "sbi": parse_sbi,
-    "yes": parse_yes,
+    "axis": parsers.parse_axis,
+    "hdfc": parsers.parse_hdfc,
+    "icici": parsers.parse_icici,
+    "sbi": parsers.parse_sbi,
+    "yes": parsers.parse_yes,
 }
 
 banklist = [keys for keys in PARSE_FUNCTIONS.keys()]

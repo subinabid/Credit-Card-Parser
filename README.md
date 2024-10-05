@@ -1,6 +1,6 @@
 # Credit Card Transaction Parser
 
-Parses the text from a credit card bill to extract the date, category, amount and vendor for each transaction and exports a csv summary,
+Parses the text from a credit card bill to extract the date, category, amount and vendor for each transaction and exports a csv summary.
 
 ## Setup / Installation
 
