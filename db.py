@@ -33,7 +33,7 @@ def get_tables():
             cursor = conn.cursor()
             cursor.execute("SELECT name FROM sqlite_master WHERE type='table';")
             tables = cursor.fetchall()
-            print(tables)
+            print(f"Folowwing tables are initialised {tables}")
 
     except sqlite3.Error as e:
         print(f"An error occurred: {e}")
@@ -41,7 +41,6 @@ def get_tables():
 
 
 def seed():
-
     with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
         query = """
