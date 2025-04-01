@@ -72,9 +72,7 @@ def get_vendors() -> dict[str, dict]:
         }
 
 
-def add_vendor(
-    bank_name: str, short_name: str, category: str, name_source: str
-) -> dict:
+def add_vendor(bank_name: str, short_name: str, category: str, name_source: str) -> dict:
     """Add a new vendor to the database."""
     try:
         conn = sqlite3.connect("database.db")
@@ -139,9 +137,7 @@ def delete_vendor(bank_name: str) -> dict:
         }
 
 
-def categorize_transaction(
-    transactions: list[dict], vendors: dict, bank: str
-) -> list[dict]:
+def categorize_transaction(transactions: list[dict], vendors: dict, bank: str) -> list[dict]:
     """Categorize the transaction based on the vendor."""
     for transaction in transactions:
         if transaction["vendor"] in vendors.keys():
@@ -149,14 +145,12 @@ def categorize_transaction(
             transaction["vendor"] = vendors[transaction["vendor"]]["short_name"]
         else:
             transaction["category"] = "Misc"
-            add_vendor(
-                transaction["vendor"], transaction["vendor"], "Misc", bank.lower()
-            )
+            add_vendor(transaction["vendor"], transaction["vendor"], "Misc", bank.lower())
     return transactions
 
 
 def main(file, bank):
-    """Parse the credit card bill and print the transactions."""
+    """Parse the credit card bill and export the transactions as CSV."""
 
     # Check if the file exists
     if not os.path.exists(file):

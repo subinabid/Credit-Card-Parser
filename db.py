@@ -2,7 +2,7 @@
 
 import sqlite3
 
-# Create tables
+# SQL Query to create tables
 create_vendors_table = """
     CREATE TABLE IF NOT EXISTS vendors (
         bank_name TEXT,
@@ -41,6 +41,7 @@ def get_tables():
 
 
 def seed():
+    """Seed the tables - Only for testing"""
     with sqlite3.connect("database.db") as conn:
         cursor = conn.cursor()
         query = """

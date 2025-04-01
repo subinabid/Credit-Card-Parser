@@ -37,7 +37,7 @@ def parse_axis(file):
             transaction["vendor"] = vendor
             transaction["amount"] = amount
             transaction["credit"] = credit
-            transaction["source"] = "Yes Bank"
+            transaction["source"] = "Axis Bank"
 
             transactions.append(transaction)
     return transactions
